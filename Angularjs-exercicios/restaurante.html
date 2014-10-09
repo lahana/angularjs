@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html ng-app>
+    <head>
+        <title>Restaurante</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/flat-ui.css">
+        <script src="angularjs.js"></script>
+        <script>
+            function restauranteCtrl($scope){
+                $scope.cardapio = [{nome: "Coca-cola", preco: 4, descricao: "Garrafa pet 600ml, Copo 350ml ou latinha 380ml"}, {nome: "Fanta Laranja", preco: 4, descricao: "Garrafa pet 600ml, Copo 350ml ou latinha 380ml"}, {nome: "Fanta Uva", preco: 4, descricao: "Garrafa pet 600ml, Copo 350ml ou latinha 380ml"}, {nome: "Pizza Calabresa", preco: 65, descricao: "Molho de Tomate, Queijo Muzzarela, Fatiado tipo Calabresa"}, {nome: "Pizza Portuguesa", preco: 68, descricao: "Molho de Tomate, Queijo Muzzarela, Cebola, Ovos, Azeitonas, Presunto"}];
+                $scope.pedidos = [];
+                $scope.totalPedidos = 0;
+                $scope.openDescription = function(item){
+                    if(item.selected){
+                        item.selected = false;
+                    } else {
+                        item.selected = true;
+                    }
+                }
+                
+                $scope.calcularTotal = function(mesa) {
+                    $scope.totalPedidos = 0;
+                    $scope.qtdePedidos = 0;
+                    $scope.pedidosMesa = [];
+                    for (var i=0; i < $scope.pedidos.length; i++){
+                        if (mesa === $scope.pedidos[i].mesa){
+                            $scope.totalPedidos += $scope.pedidos[i].item.preco * $scope.pedidos[i].quantidade;
+                            $scope.pedidosMesa.push($scope.pedidos[i]);
+                            $scope.qtdePedidos = $scope.pedidosMesa.length;
+                        }
+                    }
+                }
+                
+                $scope.adicionarPedido = function(pedido){
+                    $scope.pedidos.push(angular.copy(pedido));
+                    $scope.pedido = {};
+                    
+                };
+                
+                function removerMesa(mesa) {
+                    for (var i=0; i < $scope.pedidos.length; i++){
+                        if (mesa === $scope.pedidos[i].mesa) {
+                            $scope.pedidos.splice(i,1);
+                            return true;
+                        }
+                    }
+                    
+                    return false;
+                }
+                
+                $scope.removerPedido = function(mesa){
+                    while (removerMesa(mesa));
+                }
+                
+                $scope.limparValor = function(){
+                    $scope.totalPedidos = 0;
+                    $scope.qtdePedidos = 0;
+                }
+                
+            }
+        </script>
+        <style> 
+            .todo {
+                width: 400px;
+                margin: 30px auto;
+            }
+            .price {
+                float: right;
+                margin-right: 20px;
+                padding-top: 4px;
+            }
+            .description {
+                margin-top: 5px;
+                width: 350px;
+                text-align: justify;
+            }
+            
+            .pedidos {
+                width: 550px;
+                margin: 20px auto;
+                margin-left: 280px;
+            }
+            
+            .pedido-icon {
+                float: left;
+            }
+            
+            .login-form {
+                float: right;
+                width: 400px;
+                min-height: 100px;
+            }
+            
+            .pedido-form {
+                width: 400px;
+                margin: 20px auto;
+                background-color: #2C3E50;
+                border-radius: 4px;
+                padding: 50px;
+                
+            }
+            .form-control {
+                margin-bottom: 5px;
+            }
+            
+            .clear {
+                clear: both;
+            }
+            
+            h6 {
+                color: #fff;
+            }
+            
+            .todo li {
+                background: #34495e;
+            }
+            
+            .todo li.todo-done {
+                background: url();
+            }
+            
+            .item {
+                background-color: #1ABC9C;
+                border-radius: 4px;
+                padding: 4px;
+                margin-bottom: 5px;
+            }
+            
+            .info-mesa {
+                width: 100px;
+                display: inline-block;
+            }
+            
+            .total {
+                border: 2px dashed #555;
+                border-radius: 4px;
+                padding: 10px;
+                margin-top: 10px;
+            }
+            
+        </style>
+    </head>
+    <body ng-controller="restauranteCtrl">
+        <div class="todo">
+            <div class="todo-search">
+                <input type="text" class="todo-search-field" ng-model="criteria" />
+            </div>
+                <ul>
+                    <li  ng-repeat = "item in cardapio | filter:criteria" ng-click="openDescription(item)">
+                        <div class="todo-content" >
+                            <span class="todo-name" ng-bind = "item.nome">
+                            </span>
+                            <span class="price" ng-bind="item.preco | currency:'R$'"></span>
+                        </div>
+                        <div class="description" ng-if="item.selected">
+                            {{item.descricao}}
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="pedido-form">
+                <h6>Informe seu pedido:</h6>
+                <input class="form-control" type="text" ng-model="pedido.mesa" placeholder="Mesa"/>
+                <select ng-model="pedido.item" ng-options="item.nome for item in cardapio">
+                </select>
+                <input class="form-control" type="text" ng-model="pedido.quantidade" placeholder="Quantidade"/>
+                <a class="btn btn-primary btn-lg btn-block" ng-click="adicionarPedido(pedido)" ng-disabled="!(pedido.mesa && pedido.item)">Add</a>
+            </div>
+            <div class="pedidos" ng-show="pedidos.length > 0">
+                <div class="pedido-icon">
+                    <img src="images/icons/svg/clipboard.svg" alt="Pedidos">
+                </div>
+                <div class="login-form">
+                    <h4>Pedidos:</h4>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            Mesa
+                        </div>
+                        <div class="col-lg-5">
+                            Item
+                        </div>
+                        <div class="col-lg-2">
+                            Qtde
+                        </div>
+                        <div class="col-lg-2">
+                            Preco
+                        </div>
+                    </div>
+                    <div class="row item" ng-repeat="pedido in pedidos | filter:mesa">
+                        <div class="col-lg-2">
+                            {{pedido.mesa}}
+                        </div>
+                        <div class="col-lg-6">
+                            {{pedido.item.nome}}
+                        </div>
+                        <div class="col-lg-1">
+                            {{pedido.quantidade}}
+                        </div>
+                        <div class="col-lg-2" ng-bind="pedido.item.preco | currency:'R$'">  
+                        </div>
+                    </div>
+                    <div class="total">
+                        <input type="text" class="form-control info-mesa" ng-change="limparValor()" ng-model="mesa" placeholder="Mesa"/>
+                        <a class="btn btn-primary" ng-click="calcularTotal(mesa)">Calcular</a>
+                        <div class="numeroPedidos" ng-show="qtdePedidos">nº de Pedidos: 
+                            <span ng-bind="qtdePedidos"></span>
+                        </div>
+                        <div class="totalConta" ng-show="totalPedidos">Total: <span ng-bind="totalPedidos | currency:'R$'"></span></div>
+                        <a class="btn btn-primary" ng-click="removerPedido(mesa)" ng-disabled="!(mesa)">Fechar Conta</a>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </body>
+</html>
