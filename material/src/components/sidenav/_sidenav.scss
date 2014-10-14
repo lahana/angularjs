@@ -1,0 +1,56 @@
+material-sidenav {
+  position: absolute;
+
+  width: $sidenav-default-width;
+  bottom: 0;
+
+  background-color: white;
+
+  -webkit-transition: -webkit-transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out;
+
+  @extend .material-sidenav-left;
+
+  // &.closed {
+  //   display: none;
+  // }
+}
+
+.material-sidenav-left {
+  left: 0;
+  top: 0;
+  @include transform-translate3d(-100%, 0, 0);
+
+  &.open {
+    @include transform-translate3d(0%, 0, 0);
+    z-index: $z-index-sidenav;
+  }
+}
+
+.material-sidenav-right {
+  left: 100%;
+  top: 0;
+  @include transform-translate3d(100%, 0, 0);
+
+  &.open {
+    @include transform-translate3d(-100%, 0, 0);
+    z-index: $z-index-sidenav;
+  }
+}
+
+@media (min-width: $layout-breakpoint-md) {
+  material-sidenav {
+    position: static;
+    @include transform(translate3d(0,0,0) !important);
+  }
+
+  .material-sidenav-backdrop {
+    display: none !important;
+  }
+}
+
+@media (max-width: $sidenav-default-width + 2 * $sidenav-min-room) {
+  material-sidenav {
+    max-width: 75%;
+  }
+}
